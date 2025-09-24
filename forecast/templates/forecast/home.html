@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DFPE Demo</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <style>
+    main { max-width: 900px; margin: 2rem auto; }
+  </style>
+  <script>
+    function onSubmit(){
+      document.getElementById('runBtn').setAttribute('disabled', 'disabled');
+      document.getElementById('status').innerText = 'Running… this can take a few minutes';
+    }
+  </script>
+  {% csrf_token %}
+  </head>
+<body>
+  <main>
+    <h2>Demand Forecasting & Price Elasticity – Demo</h2>
+    <p>Run the pipeline on Kaggle dataset or provide a local CSV path.</p>
+    <form method="post" action="/run/" onsubmit="onSubmit()">
+      {% csrf_token %}
+      <label>
+        Optional local CSV path
+        <input type="text" name="csv_path" placeholder="/path/to/FMCG_2022_2024.csv" />
+      </label>
+      <label>
+        Forecast horizon (days)
+        <input type="number" min="0" max="60" name="horizon_days" value="0" />
+      </label>
+      <button id="runBtn" type="submit">Run Pipeline</button>
+      <span id="status" style="margin-left:1rem;"></span>
+    </form>
+  </main>
+</body>
+</html>
+
+

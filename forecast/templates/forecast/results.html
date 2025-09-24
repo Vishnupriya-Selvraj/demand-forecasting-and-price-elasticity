@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DFPE Results</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <style>
+    main { max-width: 1100px; margin: 2rem auto; }
+    table { width: 100%; }
+    img { max-width: 100%; height: auto; }
+  </style>
+</head>
+<body>
+  <main>
+    <h2>Results</h2>
+    {% if metrics and metrics|length %}
+      <table>
+        <thead>
+          <tr><th>Category</th><th>R2</th><th>SMAPE</th><th>MAPE</th><th>#Features</th></tr>
+        </thead>
+        <tbody>
+          {% for row in metrics %}
+            <tr>
+              <td>{{ row.category }}</td>
+              <td>{{ row.R2|floatformat:3 }}</td>
+              <td>{{ row.SMAPE|floatformat:3 }}</td>
+              <td>{{ row.MAPE|floatformat:3 }}</td>
+              <td>{{ row.N_features }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No metrics available.</p>
+    {% endif %}
+
+    {% if plot_b64 %}
+      <h3>Weekly Prediction vs Actual (sample category)</h3>
+      <img src="data:image/png;base64,{{ plot_b64 }}" alt="Weekly plot" />
+    {% endif %}
+
+    {% if actual_plots and actual_plots|length %}
+      <h3>Per-Category Actual vs Predicted</h3>
+      {% for item in actual_plots %}
+        <details>
+          <summary>{{ item.category }}</summary>
+          <img src="data:image/png;base64,{{ item.plot_b64 }}" alt="{{ item.category }} plot" />
+        </details>
+      {% endfor %}
+    {% endif %}
+
+    {% if forecasts and forecasts|length %}
+      <h3>Forecasts (aggregated by category and day)</h3>
+      {% if forecast_plot_b64 %}
+        <img src="data:image/png;base64,{{ forecast_plot_b64 }}" alt="Forecast plot" />
+      {% endif %}
+      {% if forecast_plots and forecast_plots|length %}
+        <h4>Per-Category Forecast Plots</h4>
+        {% for item in forecast_plots %}
+          <details>
+            <summary>{{ item.category }}</summary>
+            <img src="data:image/png;base64,{{ item.plot_b64 }}" alt="{{ item.category }} forecast" />
+          </details>
+        {% endfor %}
+      {% endif %}
+      <table>
+        <thead>
+          <tr><th>Date</th><th>Category</th><th>Forecast (units)</th></tr>
+        </thead>
+        <tbody>
+          {% for row in forecasts %}
+            <tr>
+              <td>{{ row.date }}</td>
+              <td>{{ row.category }}</td>
+              <td>{{ row.forecast|floatformat:0 }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+
+    <p><a href="/">Run again</a></p>
+  </main>
+</body>
+</html>
+
+
